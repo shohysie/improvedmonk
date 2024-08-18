@@ -16,7 +16,7 @@ COMPONENT 1
   Improve monk with Balthazar' abilities. There're 3 modes to be chosen: Only improves the base class monk with no kit/ Improves all monk kits, including installed monk kit MODs/ Work as a new kit, the Honed Monk.
 
 COMPONENT 2
-  Staff monk. Allows monks to use two-handed light weapons (staves and spears) and can invest one more slot to Weapon Proficiences and Weapon Styles (two more slots for Two-Weapons Style). But with disadvantage that the attack animations are not in tune (I don't know how to fix animations).
+  Staff monk. Allows monks to use two-handed light weapons (staves and spears) and can invest one more slot to Weapon Proficiencies and Weapon Styles (two more slots for Two-Weapons Style). But with disadvantage that the attack animations are not in tune (I don't know how to fix animations).
   It is highly recommended to install my MOD "Weapon Style Rebalance Rebalance" as a cooperation, which allows monks to use tripping skill while holding a single weapon, and to cast more powerful tripping with bare hands.
 
 
@@ -81,7 +81,7 @@ Resist Project allows the monk to temporarily tap a great inner strength and fig
 		                              ~~~~~~~~~~~~~~~
 
 
-v1.5 Allows monks to use invest more slots to Weapon Proficiences and Weapon Styles.  It is highly recommended to install my MOD "Weapon Style Rebalance Rebalance" as a cooperation.
+v1.5 Allows monks to use invest more slots to Weapon Proficiencies and Weapon Styles.  It is highly recommended to install my MOD "Weapon Style Rebalance Rebalance" as a cooperation.
 
 v1.4 Allows monks to use two-handed light weapons (staves and spears) and can invest 2 stars to Two-Handed Weapon Style. But with disadvantage that the attack animations are not in tune.
 

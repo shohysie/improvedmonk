@@ -81,7 +81,7 @@ Resist Project allows the monk to temporarily tap a great inner strength and fig
 		                              ~~~~~~~~~~~~~~~
 
 
-v1.5 Allows monks to use invest more slots to Weapon Proficiences and Weapon Styles.  It is highly recommended to install my MOD "Weapon Style Rebalance Rebalance" as a cooperation.
+v1.5 Allows monks to use invest more slots to Weapon Proficiencies and Weapon Styles.  It is highly recommended to install my MOD "Weapon Style Rebalance Rebalance" as a cooperation.
 
 v1.4 Allows monks to use two-handed light weapons (staves and spears) and can invest 2 stars to Two-Handed Weapon Style. But with disadvantage that the attack animations are not in tune.
 
