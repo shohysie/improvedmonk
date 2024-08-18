@@ -1,0 +1,268 @@
+BACKUP ~ImprovedMonk/backup~
+AUTHOR ~shohy@126.com~
+
+VERSION ~v1.5~
+AUTO_EVAL_STRINGS
+
+README ~%MOD_FOLDER%/README.%LANGUAGE%.txt~
+AUTO_TRA ~%MOD_FOLDER%/tra/%s~
+
+LANGUAGE  ~American English~	~english~ 		~ImprovedMonk/tra/english/game.tra~ ~ImprovedMonk/tra/english/setup.tra~
+LANGUAGE  ~Simplified Chinese~	~schinese~  ~ImprovedMonk/tra/schinese/game.tra~ ~ImprovedMonk/tra/schinese/setup.tra~
+
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+// The Improved Monk
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+BEGIN @3	//仅强化无宗派武僧
+REQUIRE_PREDICATE GAME_IS ~bgee bg2ee eet~ OR FILE_EXISTS_IN_GAME BD1000.are @2	//版本不对
+SUBCOMPONENT @1
+
+INCLUDE ~improvedmonk/lib/basemonk.tph~
+INCLUDE ~improvedmonk/lib/copyfiles.tph~
+
+
+///////////////////////////////////////////////////////////////////////
+BEGIN @4	//强化所有僧侣宗派（包括已安装的宗派MOD）
+REQUIRE_PREDICATE GAME_IS ~bgee bg2ee eet~ OR FILE_EXISTS_IN_GAME BD1000.are @2	//版本不对
+SUBCOMPONENT @1
+
+INCLUDE ~improvedmonk/lib/basemonk.tph~
+
+//读取kitlist中ability列，确定各宗派武僧非高阶技能列表的名称（kitlist列表必为宗派，不包含无宗派）
+COPY_EXISTING ~kitlist.2da~ ~override~
+	COUNT_2DA_ROWS 10 kitsmax
+	FOR (kitrow = 2 ; kitrow < kitsmax ; ++kitrow) BEGIN
+		READ_2DA_ENTRY kitrow 8 9 readclass
+		PATCH_IF (%readclass% = 20) BEGIN
+			READ_2DA_ENTRY kitrow 1 9 "kitname"
+			READ_2DA_ENTRY kitrow 5 9 "kitability"
+			INNER_ACTION BEGIN	//处理非高阶技能列表
+				APPEND ~%kitability%.2da~ ~ABILITYA **** **** **** **** **** **** GA_IPMONK09 **** **** GA_IPMONK08 **** **** **** **** GA_IPMONK08 GA_IPMONK09 **** **** **** **** **** **** **** **** GA_IPMONK09 CDREPLACE
+ABILITYB GA_IPMONK0B **** **** GA_IPMONK10 **** **** GA_IPMONK10 **** **** GA_IPMONK10 GA_IPMONK07 **** **** **** GA_IPMONK0C GA_IPMONK07 **** **** **** **** GA_IPMONK0C **** **** **** **** CDREPLACE~
+				COPY_EXISTING ~%kitability%.2da~ ~override~
+					COUNT_2DA_COLS cols
+					FOR (index = 27; index < cols ; ++index) BEGIN
+						REPLACE_TEXTUALLY ~CDREPLACE~ ~**** CDREPLACE~
+					END
+					REPLACE_TEXTUALLY ~CDREPLACE~ ~****~
+				PRETTY_PRINT_2DA
+				//读取luabbr.2da中abbrev列，确定无宗派武僧各宗派高阶技能列表的名称（MO1等）
+				COPY_EXISTING ~luabbr.2da~ ~override~
+					COUNT_2DA_ROWS 2 kitsmaxl
+					FOR (kitrowl = 0 ; kitrowl < kitsmaxl ; ++kitrowl) BEGIN
+						READ_2DA_ENTRY kitrowl 0 2 kitnamel
+						PATCH_IF ("%kitnamel%" STRING_COMPARE_CASE "%kitname%" = 0) BEGIN	//宗派名称和kitlist中相符，为武僧宗派（不包含无宗派）
+							READ_2DA_ENTRY kitrowl 1 2 kitabbrev
+							INNER_ACTION BEGIN
+								//高阶技能，共⑥种
+								COPY_EXISTING_REGEXP ~LU%kitabbrev%.2da~ ~override~
+									COUNT_2DA_ROWS ~9~ "rows"
+									SET "patch" = 0
+									SET "alreadyfixed" = 0									
+									FOR ( index = 1 ; index < rows ; index = index + 1 ) BEGIN
+									  READ_2DA_ENTRY "%index%" 1 9 "abil"
+									  PATCH_IF ("%abil%" STRING_COMPARE_CASE "GA_IPMONK01" = 0) BEGIN	//遇到改过的
+										SET "alreadyfixed" = 1	//这个文件已经改过啦
+									  END
+									  PATCH_IF ("%abil%" STRING_COMPARE_CASE "*" = 0) & ("%alreadyfixed%" = 0) BEGIN	//遇到空行
+										SET "patch" = "%patch%" + 1	//空行计数
+										PATCH_IF ("%patch%" <= 6) BEGIN
+											SET EVALUATE_BUFFER "emptyrow%patch%" = "%index%"	//记下前六个空行位置
+											//PATCH_PRINT "row%index% is empty"
+											//PATCH_PRINT "emptyrow%patch% is recorded"
+										END
+									  END
+									END
+									PATCH_IF ("%patch%" < 6) & ("%alreadyfixed%" = 0) BEGIN	//空行数不够，追加。缺6-"%patch%"行
+										SET "maxrows" = "%rows%" + 6 - "%patch%"
+										//PATCH_PRINT "required rows are 6-%patch%"
+										//PATCH_PRINT "add row at %rows% to less than %maxrows%"
+										FOR ( index =  "%rows%" ; index < "%maxrows%" ; index = index + 1 ) BEGIN
+											INSERT_2DA_ROW "%index%" 9 ~%index%         *          *          *          *          *          *           *            *           *                  ~
+											SET "patch" = "%patch%" + 1	//空行计数
+											SET EVALUATE_BUFFER "emptyrow%patch%" = "%index%"
+										END
+									END
+									PATCH_IF ("%alreadyfixed%" = 0) BEGIN
+										FOR ( patch = 1 ; patch < 7 ; patch = patch + 1 ) BEGIN
+											SET_2DA_ENTRY "emptyrow%patch%" 1 9 ~GA_IPMONK0%patch%~
+											SET_2DA_ENTRY "emptyrow%patch%" 4 9 ~1~
+											SET_2DA_ENTRY "emptyrow%patch%" 5 9 ~99~
+											SET_2DA_ENTRY "emptyrow%patch%" 6 9 ~20~
+										END
+									END
+							END
+						END
+					END
+				BUT_ONLY
+			END
+		END
+	END
+BUT_ONLY
+
+INCLUDE ~improvedmonk/lib/copyfiles.tph~
+
+
+///////////////////////////////////////////////////////////////////////
+BEGIN @5	//作为新宗派（卡林杉武僧）
+REQUIRE_PREDICATE GAME_IS ~bgee bg2ee eet~ OR FILE_EXISTS_IN_GAME BD1000.are @2	//版本不对
+SUBCOMPONENT @1
+
+ACTION_IF NOT FILE_EXISTS_IN_GAME ~K_MN_D.2DA~ THEN BEGIN
+	COPY ~improvedmonk/2da/K_MN_.2DA~ ~override/K_MN_D.2DA~
+END
+
+ACTION_IF NOT FILE_EXISTS_IN_GAME ~K_MN_G.2DA~ THEN BEGIN
+	COPY ~improvedmonk/2da/K_MN_.2DA~ ~override/K_MN_G.2DA~
+END
+
+ACTION_IF NOT FILE_EXISTS_IN_GAME ~K_MN_E.2DA~ THEN BEGIN
+	COPY ~improvedmonk/2da/K_MN_.2DA~ ~override/K_MN_E.2DA~
+END
+
+ACTION_IF NOT FILE_EXISTS_IN_GAME ~K_MN_HE.2DA~ THEN BEGIN
+	COPY ~improvedmonk/2da/K_MN_.2DA~ ~override/K_MN_HE.2DA~
+END
+
+ACTION_IF NOT FILE_EXISTS_IN_GAME ~K_MN_HL.2DA~ THEN BEGIN
+	COPY ~improvedmonk/2da/K_MN_.2DA~ ~override/K_MN_HL.2DA~
+END
+
+ACTION_IF NOT FILE_EXISTS_IN_GAME ~K_MN_HO.2DA~ THEN BEGIN
+	COPY ~improvedmonk/2da/K_MN_.2DA~ ~override/K_MN_HO.2DA~
+END
+
+INCLUDE ~improvedmonk/lib/copyfiles.tph~
+INCLUDE ~improvedmonk/lib/fl#add_kit_ee.tpa~
+
+ADD_KIT ~MOIP~
+/* CLASWEAP.2DA */
+	~MOIP 1 1 1 1 1 0 0 0~
+/* WEAPPROF.2DA */
+	~MOIP 0 1 0 0 1 0 0 1 0 1 1 0 0 1 1 1 0 1 0 0 0 0 0 0 0 0 1 1 0 0 2 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0~
+/* ABCLASRQ.2DA */
+	~MOIP 0 9 11 0 9 0~
+/* ABCLSMOD.2DA */
+	~MOIP 0 0 0 0 0 0~
+/* ABDCDSRQ.2DA */
+	~MOIP 0 17 17 0 17 0~
+/* ABDCSCRQ.2DA */
+	~MOIP 0 15 15 0 15 0~
+/* ALIGNMNT.2DA */
+	~MOIP 1 1 1 0 0 0 0 0 0~
+/* DUALCLAS.2DA */
+	~MOIP 0 0 0 0 0 0~
+/* The path of abilities 2DA file */
+	~improvedmonk/2da/CLABMOIP.2DA~
+/* KITTABLE.2DA */
+	~K_MN_H K_MN_D K_MN_G K_MN_E K_MN_HE K_MN_HL K_MN_HO~
+/* KITLIST.2DA */
+	~0x00004000 20~
+/* LUABBR.2DA */
+	~MOI~
+/* 25STWEAP.2DA */
+	~* * HELM19 BAG23 RING06 RING29 CLCK02 BOOT01 AMUL19 BRAC16 BELT06 AROW11,40 BULL03,40 BOLT06,40 POTN52,5 POTN04,2 POTN14,5 * * *~
+	SAY @8
+	SAY @8
+	SAY @9
+
+	LAF fl#add_kit_ee
+	  STR_VAR
+	    kit_name = MOIP
+	    clswpbon = ~1 3 2~
+	    hpclass = ~HPMONK~
+	    clsrcreq = ~1 1 1 1 1 1 1~
+	    numwslot = 3
+	    clascolr = ~25 28 57 2 24~
+	END
+
+
+
+
+BEGIN @6	//允许武僧使用双手轻武器（手杖和长枪），支持所有宗派，缺点是攻击动画不合拍
+
+//BAND	00=>0 01=>0 11=>1
+//BOR	00=>0 01=>1 11=>1
+//BXOR	00=>0 01=>1 11=>0
+COPY_EXISTING_REGEXP GLOB ~^.+\.itm$~ ~override~
+	READ_BYTE 0x1c wpcate	//读取武器类型
+	READ_BYTE 0x31 wpprof	//读取武器熟练
+	READ_SHORT 0x22 wpapp	//读取武器外形
+	PATCH_IF (wpcate = 26) OR (wpprof = 102) BEGIN	//武器类型或武器掌握是手杖
+		READ_BYTE 0x18 wpflags1
+		READ_BYTE 0x19 wpflags2
+		READ_BYTE 0x20 wpuse
+		PATCH_IF (((wpflags1 BAND 0b00000110) = 0b00000110) OR ((wpflags2 BAND 0b00010000) = 0b00010000)) AND ((wpuse BAND 0b01000000) = 0) BEGIN // 可移动，双手或伪双手，盗贼可用
+			WRITE_LONG 0x21 (THIS BAND 0b11011111)	//BIT5归0其它不变，武僧可用
+			PATCH_IF (wpapp = 21329) BEGIN	//动画是手杖，修改挥舞动画
+				READ_SHORT 0x68 wpheads	//读取物品能力数
+					FOR (wpability = 0 ; wpability < wpheads ; ++wpability) BEGIN
+						READ_BYTE ( 0x72 + 0x38 * wpability ) wpheadtype
+						READ_BYTE ( 0x74 + 0x38 * wpability ) wpheadlocation
+						PATCH_IF ( wpheadtype = 1 ) & ( wpheadlocation = 1 ) BEGIN //近战
+							WRITE_SHORT ( 0x9e + 0x38 * wpability ) 20
+							WRITE_SHORT ( 0xa0 + 0x38 * wpability ) 70
+							WRITE_SHORT ( 0xa2 + 0x38 * wpability ) 10
+						END
+					END
+			END
+		END
+	END
+	PATCH_IF (wpcate = 29) OR (wpprof = 98) BEGIN	//武器类型或武器掌握是长矛
+		READ_BYTE 0x18 wpflags1
+		READ_BYTE 0x19 wpflags2
+		READ_BYTE 0x20 wpuse
+		PATCH_IF (((wpflags1 BAND 0b00000110) = 0b00000110) OR ((wpflags2 BAND 0b00010000) = 0b00010000)) AND ((wpuse BAND 0b00110011) = 0) BEGIN // 可移动，双手或伪双手，勇士类可用
+			WRITE_LONG 0x21 (THIS BAND 0b11011111)	//BIT5归0其它不变，武僧可用
+			PATCH_IF (wpapp = 20563) BEGIN	//动画是长矛，修改挥舞动画
+				READ_SHORT 0x68 wpheads	//读取物品能力数
+					FOR (wpability = 0 ; wpability < wpheads ; ++wpability) BEGIN
+						READ_BYTE ( 0x72 + 0x38 * wpability ) wpheadtype
+						READ_BYTE ( 0x74 + 0x38 * wpability ) wpheadlocation
+						PATCH_IF ( wpheadtype = 1 ) & ( wpheadlocation = 1 ) BEGIN //近战
+							WRITE_SHORT ( 0x9e + 0x38 * wpability ) 10
+							WRITE_SHORT ( 0xa0 + 0x38 * wpability ) 20
+							WRITE_SHORT ( 0xa2 + 0x38 * wpability ) 70
+						END
+					END
+			END
+		END
+	END
+BUT_ONLY
+
+//武僧可以在手杖、长枪和各武器流派投入技能点
+COPY_EXISTING ~kitlist.2da~ ~override~
+	COUNT_2DA_ROWS 10 kitsmax
+	FOR (kitrow = 2 ; kitrow < kitsmax ; ++kitrow) BEGIN
+		READ_2DA_ENTRY kitrow 8 9 readclass
+		PATCH_IF (%readclass% = 20) BEGIN	//寻找武僧宗派
+			READ_2DA_ENTRY kitrow 1 9 "kitname"	//记下名称
+			INNER_ACTION BEGIN	//处理非高阶技能列表
+				COPY_EXISTING ~weapprof.2da~ ~override~
+					COUNT_2DA_COLS kitsmaxl
+					FOR (kitcol = 0 ; kitcol < (kitsmaxl - 1) ; ++kitcol) BEGIN
+						READ_2DA_ENTRY 0 kitcol 30 kitnamel
+						PATCH_IF ("%kitnamel%" STRING_COMPARE_CASE "%kitname%" = 0) OR ("%kitnamel%" STRING_COMPARE_CASE "MONK" = 0) BEGIN	//宗派名称和kitlist中相符，为武僧宗派。无宗派武僧也要处理
+							SET_2DA_ENTRY 10 (kitcol + 1) 30 ~2~
+							SET_2DA_ENTRY 11 (kitcol + 1) 30 ~2~
+							SET_2DA_ENTRY 14 (kitcol + 1) 30 ~2~
+							SET_2DA_ENTRY 15 (kitcol + 1) 30 ~2~
+							SET_2DA_ENTRY 16 (kitcol + 1) 30 ~2~
+							SET_2DA_ENTRY 18 (kitcol + 1) 30 ~2~
+							SET_2DA_ENTRY 19 (kitcol + 1) 30 ~2~
+							SET_2DA_ENTRY 23 (kitcol + 1) 30 ~2~
+							SET_2DA_ENTRY 27 (kitcol + 1) 30 ~2~
+							SET_2DA_ENTRY 28 (kitcol + 1) 30 ~2~
+							SET_2DA_ENTRY 29 (kitcol + 1) 30 ~2~
+							SET_2DA_ENTRY 30 (kitcol + 1) 30 ~2~
+							SET_2DA_ENTRY 31 (kitcol + 1) 30 ~2~
+							SET_2DA_ENTRY 32 (kitcol + 1) 30 ~3~
+						END
+					END
+				BUT_ONLY
+			END
+		END
+	END
+BUT_ONLY
