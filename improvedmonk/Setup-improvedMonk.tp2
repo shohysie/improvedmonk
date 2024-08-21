@@ -1,7 +1,7 @@
 BACKUP ~ImprovedMonk/backup~
 AUTHOR ~shohy@126.com~
 
-VERSION ~v1.5~
+VERSION ~v1.4~
 AUTO_EVAL_STRINGS
 
 README ~%MOD_FOLDER%/README.%LANGUAGE%.txt~
@@ -195,7 +195,7 @@ COPY_EXISTING_REGEXP GLOB ~^.+\.itm$~ ~override~
 		READ_BYTE 0x19 wpflags2
 		READ_BYTE 0x20 wpuse
 		PATCH_IF (((wpflags1 BAND 0b00000110) = 0b00000110) OR ((wpflags2 BAND 0b00010000) = 0b00010000)) AND ((wpuse BAND 0b01000000) = 0) BEGIN // 可移动，双手或伪双手，盗贼可用
-			WRITE_LONG 0x21 (THIS BAND 0b11011111)	//BIT5归0其它不变，武僧可用
+			WRITE_SHORT 0x21 (THIS BAND 0b11011111)	//BIT5归0其它不变，武僧可用
 			PATCH_IF (wpapp = 21329) BEGIN	//动画是手杖，修改挥舞动画
 				READ_SHORT 0x68 wpheads	//读取物品能力数
 					FOR (wpability = 0 ; wpability < wpheads ; ++wpability) BEGIN
@@ -215,7 +215,7 @@ COPY_EXISTING_REGEXP GLOB ~^.+\.itm$~ ~override~
 		READ_BYTE 0x19 wpflags2
 		READ_BYTE 0x20 wpuse
 		PATCH_IF (((wpflags1 BAND 0b00000110) = 0b00000110) OR ((wpflags2 BAND 0b00010000) = 0b00010000)) AND ((wpuse BAND 0b00110011) = 0) BEGIN // 可移动，双手或伪双手，勇士类可用
-			WRITE_LONG 0x21 (THIS BAND 0b11011111)	//BIT5归0其它不变，武僧可用
+			WRITE_SHORT 0x21 (THIS BAND 0b11011111)	//BIT5归0其它不变，武僧可用
 			PATCH_IF (wpapp = 20563) BEGIN	//动画是长矛，修改挥舞动画
 				READ_SHORT 0x68 wpheads	//读取物品能力数
 					FOR (wpability = 0 ; wpability < wpheads ; ++wpability) BEGIN
