@@ -1,7 +1,7 @@
                    ********************************************************
                    ********************************************************
                    **          ImprovedMonk (Balthazar Mode) &           **
-                   **                   Armed Monk   V1.5                **
+                   **                   Armed Monk   V1.6                **
                    **                 shohy ( shohy@126.com )            **
                    ********************************************************
                    ********************************************************  
@@ -82,7 +82,9 @@ Resist Project allows the monk to temporarily tap a great inner strength and fig
 		                              ~~~~~~~~~~~~~~~
 
 
-v1.5 Allows monks to use invest more slots to Weapon Proficiencies and Weapon Styles.  It is highly recommended to install my MOD "Weapon Style Rebalance Rebalance" as a cooperation.
+v1.6 Fixed the problem: when the new kit is chosen in Component 1, it losses its high-level skills, and an immediately installed Component 2 does not work on this new kit.
+
+v1.5 Allows monks to use invest more slots to Weapon Proficiences and Weapon Styles.  It is highly recommended to install my MOD "Weapon Style Rebalance Rebalance" as a cooperation.
 
 v1.4 Allows monks to use two-handed light weapons (staves and spears) and can invest 2 stars to Two-Handed Weapon Style. But with disadvantage that the attack animations are not in tune.
 

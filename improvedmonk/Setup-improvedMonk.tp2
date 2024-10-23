@@ -1,7 +1,7 @@
 BACKUP ~ImprovedMonk/backup~
 AUTHOR ~shohy@126.com~
 
-VERSION ~v1.4~
+VERSION ~v1.6~
 AUTO_EVAL_STRINGS
 
 README ~%MOD_FOLDER%/README.%LANGUAGE%.txt~
@@ -33,7 +33,7 @@ INCLUDE ~improvedmonk/lib/basemonk.tph~
 //读取kitlist中ability列，确定各宗派武僧非高阶技能列表的名称（kitlist列表必为宗派，不包含无宗派）
 COPY_EXISTING ~kitlist.2da~ ~override~
 	COUNT_2DA_ROWS 10 kitsmax
-	FOR (kitrow = 2 ; kitrow < kitsmax ; ++kitrow) BEGIN
+	FOR (kitrow = 2 ; kitrow < kitsmax + 1 ; ++kitrow) BEGIN
 		READ_2DA_ENTRY kitrow 8 9 readclass
 		PATCH_IF (%readclass% = 20) BEGIN
 			READ_2DA_ENTRY kitrow 1 9 "kitname"
@@ -137,6 +137,9 @@ END
 INCLUDE ~improvedmonk/lib/copyfiles.tph~
 INCLUDE ~improvedmonk/lib/fl#add_kit_ee.tpa~
 
+
+COPY ~improvedmonk/2da/LUMOI.2DA~ ~override~
+
 ADD_KIT ~MOIP~
 /* CLASWEAP.2DA */
 	~MOIP 1 1 1 1 1 0 0 0~
@@ -235,16 +238,19 @@ BUT_ONLY
 //武僧可以在手杖、长枪和各武器流派投入技能点
 COPY_EXISTING ~kitlist.2da~ ~override~
 	COUNT_2DA_ROWS 10 kitsmax
-	FOR (kitrow = 2 ; kitrow < kitsmax ; ++kitrow) BEGIN
+	FOR (kitrow = 2 ; kitrow < kitsmax + 1 ; ++kitrow) BEGIN
 		READ_2DA_ENTRY kitrow 8 9 readclass
 		PATCH_IF (%readclass% = 20) BEGIN	//寻找武僧宗派
 			READ_2DA_ENTRY kitrow 1 9 "kitname"	//记下名称
+			//PATCH_PRINT "%kitname%"
 			INNER_ACTION BEGIN	//处理非高阶技能列表
 				COPY_EXISTING ~weapprof.2da~ ~override~
 					COUNT_2DA_COLS kitsmaxl
 					FOR (kitcol = 0 ; kitcol < (kitsmaxl - 1) ; ++kitcol) BEGIN
 						READ_2DA_ENTRY 0 kitcol 30 kitnamel
-						PATCH_IF ("%kitnamel%" STRING_COMPARE_CASE "%kitname%" = 0) OR ("%kitnamel%" STRING_COMPARE_CASE "MONK" = 0) BEGIN	//宗派名称和kitlist中相符，为武僧宗派。无宗派武僧也要处理
+						PATCH_IF ("%kitnamel%" STRING_COMPARE_CASE "%kitname%" = 0) OR ("%kitnamel%" STRING_COMPARE_CASE "MONK" = 0) BEGIN
+							//PATCH_PRINT "%kitnamel%"
+						//宗派名称和kitlist中相符，为武僧宗派。无宗派武僧也要处理
 							SET_2DA_ENTRY 10 (kitcol + 1) 30 ~2~
 							SET_2DA_ENTRY 11 (kitcol + 1) 30 ~2~
 							SET_2DA_ENTRY 14 (kitcol + 1) 30 ~2~
