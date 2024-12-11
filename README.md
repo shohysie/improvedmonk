@@ -20,6 +20,9 @@ COMPONENT 2
   Armed monk. Allows monks to use two-handed light weapons (staves and spears) and can invest one more slot to Weapon Proficiences and Weapon Styles (two more slots for Two-Weapons Style). But with disadvantage that the attack animations are not in tune (I don't know how to fix animations).
   It is highly recommended to install my MOD "Weapon Style Rebalance Rebalance" as a cooperation, which allows monks to use tripping skill while holding a single weapon, and to cast more powerful tripping with bare hands.
 
+COMPONENT 3
+  Allows all bare-handed skills (e.g. Stunning Blow and Quivering Palm) of monks to be effective also on melee weapons. Supports monk kit MODs installed already.
+
 
 
 
@@ -81,6 +84,8 @@ Resist Project allows the monk to temporarily tap a great inner strength and fig
 		                              Version History 
 		                              ~~~~~~~~~~~~~~~
 
+
+v1.7 A new component that allows all bare-handed skills (e.g. Stunning Blow and Quivering Palm) of monks to be effective also on melee weapons. Supports monk kit MODs installed already.
 
 v1.6 Fixed the problem: when the new kit is chosen in Component 1, it losses its high-level skills, and an immediately installed Component 2 does not work on this new kit.
 
