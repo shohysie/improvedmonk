@@ -3,4 +3,6 @@
 @3 = ~Only improves the base class monk with no kit.~
 @4 = ~Improves all monk kits, including installed monk kit MODs.~
 @5 = ~Work as a new kit, the Honed Monk.~
-@6 = ~Allowing monks to use two-handed light weapons (staves and spears), also supports monk kit MODs already installed. With disadvantage that attack animations are out of step.~
+@6 = ~Allowing monks to use two-handed light weapons (staves and spears), also supports monk kit MODs installed already. With disadvantage that attack animations are out of step.~
+@7 = ~Allowing all bare-handed skills (e.g. Stunning Blow and Quivering Palm) of monks to be effective also on melee weapons. Supports monk kit MODs installed already.~
+@8 = ~The previous component is required.~
